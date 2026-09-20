@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomApplication xmlns="http://soap.sforce.com/2006/04/metadata">
+    <formFactors>Large</formFactors>
+    <isNavAutoTempTabsDisabled>false</isNavAutoTempTabsDisabled>
+    <isNavPersonalizationDisabled>false</isNavPersonalizationDisabled>
+    <isNavTabPersistenceDisabled>false</isNavTabPersistenceDisabled>
+    <isOmniPinnedViewEnabled>false</isOmniPinnedViewEnabled>
+    <label>Subscription Management</label>
+    <navType>Console</navType>
+    <tabs>standard-Product2</tabs>
+    <tabs>standard-Pricebook2</tabs>
+    <tabs>Loan__c</tabs>
+    <tabs>Installment__c</tabs>
+    <tabs>Payment__c</tabs>
+    <uiType>Lightning</uiType>
+    <utilityBar>RevenueCloudConsole_UtilityBar</utilityBar>
+    <workspaceConfig>
+        <mappings>
+            <tab>Installment__c</tab>
+        </mappings>
+        <mappings>
+            <tab>Loan__c</tab>
+        </mappings>
+        <mappings>
+            <tab>Payment__c</tab>
+        </mappings>
+        <mappings>
+            <tab>standard-Pricebook2</tab>
+        </mappings>
+        <mappings>
+            <tab>standard-Product2</tab>
+        </mappings>
+    </workspaceConfig>
+</CustomApplication>
