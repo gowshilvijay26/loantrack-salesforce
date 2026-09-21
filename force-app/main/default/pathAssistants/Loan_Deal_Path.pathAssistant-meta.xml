@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PathAssistant xmlns="http://soap.sforce.com/2006/04/metadata">
+    <active>true</active>
+    <entityName>Opportunity</entityName>
+    <fieldName>StageName</fieldName>
+    <masterLabel>Loan Deal Path</masterLabel>
+    <pathAssistantSteps>
+        <fieldNames>Amount</fieldNames>
+        <fieldNames>Interest_Rate__c</fieldNames>
+        <fieldNames>Tenure_Months__c</fieldNames>
+        <fieldNames>Requested_Amount__c</fieldNames>
+        <info>&lt;p&gt;Set the interest rate and confirm the tenure before moving to Closed Won&lt;/p&gt;</info>
+        <picklistValueName>Approval</picklistValueName>
+    </pathAssistantSteps>
+    <pathAssistantSteps>
+        <fieldNames>NextStep</fieldNames>
+        <fieldNames>CloseDate</fieldNames>
+        <info>&lt;p&gt;Record the reason in Next Step&lt;/p&gt;</info>
+        <picklistValueName>Closed Lost</picklistValueName>
+    </pathAssistantSteps>
+    <pathAssistantSteps>
+        <fieldNames>Amount</fieldNames>
+        <fieldNames>Interest_Rate__c</fieldNames>
+        <fieldNames>Tenure_Months__c</fieldNames>
+        <info>&lt;p&gt;Draft Loan is created automatically. Submit it for approval from the Loan record&lt;/p&gt;</info>
+        <picklistValueName>Closed Won</picklistValueName>
+    </pathAssistantSteps>
+    <pathAssistantSteps>
+        <fieldNames>Requested_Amount__c</fieldNames>
+        <fieldNames>Tenure_Months__c</fieldNames>
+        <fieldNames>NextStep</fieldNames>
+        <fieldNames>CloseDate</fieldNames>
+        <info>&lt;p&gt;Collect ID proof, address proof and income documents&lt;/p&gt;</info>
+        <picklistValueName>Documentation</picklistValueName>
+    </pathAssistantSteps>
+    <pathAssistantSteps>
+        <fieldNames>Requested_Amount__c</fieldNames>
+        <fieldNames>Loan_Purpose__c</fieldNames>
+        <fieldNames>Tenure_Months__c</fieldNames>
+        <fieldNames>CloseDate</fieldNames>
+        <info>&lt;p&gt;Verify client details and requested amount. Confirm loan purpose&lt;/p&gt;</info>
+        <picklistValueName>Enquiry</picklistValueName>
+    </pathAssistantSteps>
+    <recordTypeName>__MASTER__</recordTypeName>
+</PathAssistant>
