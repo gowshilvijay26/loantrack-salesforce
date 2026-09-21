@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Lock_Terms_After_Active</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(
+  NOT(ISNEW()),
+  OR(
+    ISPICKVAL(PRIORVALUE(Status__c), &quot;Active&quot;),
+    ISPICKVAL(PRIORVALUE(Status__c), &quot;Defaulted&quot;),
+    ISPICKVAL(PRIORVALUE(Status__c), &quot;Closed&quot;)
+  ),
+  OR(
+    ISCHANGED(Principal_Amount__c),
+    ISCHANGED(Interest_Rate__c),
+    ISCHANGED(Tenure_Months__c)
+  )
+)</errorConditionFormula>
+    <errorMessage>Principal, interest rate and tenure cannot be changed after the loan is Active</errorMessage>
+</ValidationRule>
