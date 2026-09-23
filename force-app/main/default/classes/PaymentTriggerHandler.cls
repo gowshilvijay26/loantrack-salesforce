@@ -93,7 +93,7 @@ public with sharing class PaymentTriggerHandler {
             touchedLoanIds.add(p.Loan__c);
         }
 
-        // 4. ONE update for all installments (CHANGED: only the 3 fields we change)
+        // 4. ONE update for all installments (only the 3 fields we change)
         if (!changedInstallments.isEmpty()) {
             List<Installment__c> toUpdate = new List<Installment__c>();
             for (Installment__c inst : changedInstallments.values()) {
@@ -146,6 +146,9 @@ public with sharing class PaymentTriggerHandler {
                 update loansToClose;
             }
         }
+
+        // 6. Recalculate Account rollups for every loan touched by this payment run
+        AccountRollupQueueable.enqueueForLoans(touchedLoanIds);
     }
 
     // ---------- helpers ----------
