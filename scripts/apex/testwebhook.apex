@@ -1,11 +1,12 @@
-HttpRequest req = new HttpRequest();
-req.setEndpoint('callout:Webhook_Site_NC');
-req.setMethod('POST');
-req.setHeader('Content-Type', 'application/json');
-req.setBody('{"test":"Hello from LoanTrack Apex","loan":"LN-0020","status":"Overdue"}');
+// Get one Overdue installment for testing
+List<Installment__c> testInst = [
+    SELECT Id FROM Installment__c WHERE Status__c = 'Overdue' LIMIT 1
+];
 
-Http http = new Http();
-HTTPResponse res = http.send(req);
-
-System.debug('Status Code: ' + res.getStatusCode());
-System.debug('Response Body: ' + res.getBody());
+if (!testInst.isEmpty()) {
+    List<Id> ids = new List<Id>{ testInst[0].Id };
+    System.enqueueJob(new OverdueAlertQueueable(ids));
+    System.debug('Queueable enqueued for Installment: ' + testInst[0].Id);
+} else {
+    System.debug('No Overdue installment found — run OverdueInstallmentBatch first, or manually set one installment Status__c = Overdue for testing.');
+}
