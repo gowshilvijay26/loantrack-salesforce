@@ -1,0 +1,71 @@
+<template>
+    <lightning-card title="Installment Schedule" icon-name="standard:installment_lending">
+
+        <template if:true={installments}>
+            <lightning-datatable
+                key-field="id"
+                data={tableData}
+                columns={columns}
+                onrowaction={handleRowAction}
+                hide-checkbox-column>
+            </lightning-datatable>
+        </template>
+
+        <template if:true={error}>
+            <div class="slds-p-around_medium slds-text-color_error">
+                Could not load installments: {error}
+            </div>
+        </template>
+
+        <!-- Record Payment Modal -->
+        <template if:true={showModal}>
+            <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_small">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <button class="slds-button slds-button_icon slds-modal__close" title="Close" onclick={closeModal}>
+                            <lightning-icon icon-name="utility:close" size="small" variant="inverse"></lightning-icon>
+                            <span class="slds-assistive-text">Close</span>
+                        </button>
+                        <h2 class="slds-text-heading_medium">Record Payment</h2>
+                    </header>
+
+                    <div class="slds-modal__content slds-p-around_medium">
+                        <p class="slds-m-bottom_small">
+                            <b>Installment:</b> {selectedInstallmentName}<br/>
+                            <b>Balance Due:</b> {selectedBalanceDueFormatted}
+                        </p>
+
+                        <lightning-input
+                            type="number"
+                            label="Amount"
+                            step="0.01"
+                            value={paymentAmount}
+                            onchange={handleAmountChange}>
+                        </lightning-input>
+
+                        <lightning-combobox
+                            label="Payment Mode"
+                            value={paymentMode}
+                            options={paymentModeOptions}
+                            onchange={handleModeChange}
+                            class="slds-m-top_small">
+                        </lightning-combobox>
+
+                        <template if:true={modalError}>
+                            <p class="slds-text-color_error slds-m-top_small">{modalError}</p>
+                        </template>
+                    </div>
+
+                    <footer class="slds-modal__footer">
+                        <button class="slds-button slds-button_neutral" onclick={closeModal}>Cancel</button>
+                        <button class="slds-button slds-button_brand" onclick={submitPayment} disabled={isSaving}>
+                            Save Payment
+                        </button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+
+    </lightning-card>
+</template>
