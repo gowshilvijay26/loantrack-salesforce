@@ -1,0 +1,52 @@
+<template>
+    <lightning-card title="Loan Summary" icon-name="standard:currency">
+        <div class="slds-p-around_medium">
+
+            <template if:true={summary}>
+                <div class="slds-grid slds-wrap slds-gutters">
+
+                    <div class="slds-col slds-size_1-of-2 slds-m-bottom_small">
+                        <p class="slds-text-title">Outstanding Amount</p>
+                        <p class="slds-text-heading_medium">{outstandingFormatted}</p>
+                    </div>
+
+                    <div class="slds-col slds-size_1-of-2 slds-m-bottom_small">
+                        <p class="slds-text-title">Next EMI Due</p>
+                        <p class="slds-text-heading_medium">{nextDueDateFormatted}</p>
+                    </div>
+
+                    <div class="slds-col slds-size_1-of-1 slds-m-bottom_small">
+                        <p class="slds-text-title slds-m-bottom_x-small">
+                            Repayment Progress ({summary.progressPercent}%)
+                        </p>
+                        <lightning-progress-bar
+                            value={summary.progressPercent}
+                            size="large">
+                        </lightning-progress-bar>
+                    </div>
+
+                    <div class="slds-col slds-size_1-of-1">
+                        <template if:true={hasOverdue}>
+                            <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error" role="alert">
+                                {overdueMessage}
+                            </div>
+                        </template>
+                        <template if:false={hasOverdue}>
+                            <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_success" role="alert">
+                                No overdue installments
+                            </div>
+                        </template>
+                    </div>
+
+                </div>
+            </template>
+
+            <template if:true={error}>
+                <div class="slds-text-color_error">
+                    Could not load loan summary: {error}
+                </div>
+            </template>
+
+        </div>
+    </lightning-card>
+</template>
