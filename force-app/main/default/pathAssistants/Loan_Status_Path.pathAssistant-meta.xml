@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PathAssistant xmlns="http://soap.sforce.com/2006/04/metadata">
+    <active>true</active>
+    <entityName>Loan__c</entityName>
+    <fieldName>Status__c</fieldName>
+    <masterLabel>Loan Status Path</masterLabel>
+    <pathAssistantSteps>
+        <fieldNames>EMI_Amount__c</fieldNames>
+        <fieldNames>Disbursement_Date__c</fieldNames>
+        <info>&lt;p&gt;The loan is active. Installments are being tracked and payments can be recorded.&lt;/p&gt;</info>
+        <picklistValueName>Active</picklistValueName>
+    </pathAssistantSteps>
+    <pathAssistantSteps>
+        <fieldNames>Principal_Amount__c</fieldNames>
+        <fieldNames>EMI_Amount__c</fieldNames>
+        <fieldNames>Tenure_Months__c</fieldNames>
+        <info>&lt;p&gt;The loan is approved. Click &amp;quot;Disburse Loan&amp;quot; to set the Disbursement Date and First EMI Date, and activate the loan.&lt;/p&gt;</info>
+        <picklistValueName>Approved</picklistValueName>
+    </pathAssistantSteps>
+    <pathAssistantSteps>
+        <fieldNames>Total_Paid__c</fieldNames>
+        <fieldNames>Total_Payable__c</fieldNames>
+        <fieldNames>Outstanding_Amount__c</fieldNames>
+        <info>&lt;p&gt;This loan is fully repaid. All installments have been marked Paid and no further action is needed.&lt;/p&gt;</info>
+        <picklistValueName>Closed</picklistValueName>
+    </pathAssistantSteps>
+    <pathAssistantSteps>
+        <fieldNames>Overdue_Installments__c</fieldNames>
+        <fieldNames>Outstanding_Amount__c</fieldNames>
+        <fieldNames>Total_Paid__c</fieldNames>
+        <info>&lt;p&gt;This loan has multiple overdue installments and has been marked as defaulted. Refer to the Collections team&lt;/p&gt;</info>
+        <picklistValueName>Defaulted</picklistValueName>
+    </pathAssistantSteps>
+    <pathAssistantSteps>
+        <fieldNames>Principal_Amount__c</fieldNames>
+        <fieldNames>Interest_Rate__c</fieldNames>
+        <fieldNames>Tenure_Months__c</fieldNames>
+        <info>&lt;p&gt;Fill in the loan terms and submit for approval when ready&lt;/p&gt;</info>
+        <picklistValueName>Draft</picklistValueName>
+    </pathAssistantSteps>
+    <pathAssistantSteps>
+        <fieldNames>Principal_Amount__c</fieldNames>
+        <fieldNames>Interest_Rate__c</fieldNames>
+        <fieldNames>Tenure_Months__c</fieldNames>
+        <fieldNames>Requires_Second_Approval__c</fieldNames>
+        <info>&lt;p&gt;This loan has been submitted for approval. Check Approval History to see who the request is assigned to. No changes can be made until it is approved or rejected.&lt;/p&gt;</info>
+        <picklistValueName>Pending Approval</picklistValueName>
+    </pathAssistantSteps>
+    <pathAssistantSteps>
+        <fieldNames>Principal_Amount__c</fieldNames>
+        <fieldNames>Interest_Rate__c</fieldNames>
+        <info>&lt;p&gt;This loan request was rejected. Check Approval History for the rejection comments. Edit the loan and resubmit if the issue is resolved.&lt;/p&gt;</info>
+        <picklistValueName>Rejected</picklistValueName>
+    </pathAssistantSteps>
+    <recordTypeName>__MASTER__</recordTypeName>
+</PathAssistant>
