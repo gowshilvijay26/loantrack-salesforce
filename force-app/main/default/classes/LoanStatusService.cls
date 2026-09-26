@@ -19,22 +19,24 @@ global with sharing class LoanStatusService {
             return;
         }
 
-        List<Loan__c> loans;
+                Id parsedLoanId;
         try {
-            loans = [
-                SELECT Id, Name, Status__c, EMI_Amount__c, Outstanding_Amount__c
-                FROM Loan__c
-                WHERE Id = :loanId
-                WITH USER_MODE
-                LIMIT 1
-            ];
+            parsedLoanId = (Id) loanId;
         } catch (Exception e) {
             res.statusCode = 400;
             res.responseBody = Blob.valueOf(
-                JSON.serialize(new Map<String, String>{ 'error' => 'Invalid Loan Id.' })
+                JSON.serialize(new Map<String, String>{ 'error' => 'Invalid Loan Id format.' })
             );
             return;
         }
+
+        List<Loan__c> loans = [
+            SELECT Id, Name, Status__c, EMI_Amount__c, Outstanding_Amount__c
+            FROM Loan__c
+            WHERE Id = :parsedLoanId
+            WITH USER_MODE
+            LIMIT 1
+        ];
 
         if (loans.isEmpty()) {
             res.statusCode = 404;
