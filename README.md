@@ -50,46 +50,47 @@ flowchart LR
 ---
 
 ## Architecture Overview
-
 ```mermaid
 flowchart TB
     subgraph UI["Lightning Experience"]
-        LWC1[loanCalculator]
-        LWC2[loanSummaryCard]
-        LWC3[installmentSchedule]
-        Flow1[Disburse Loan<br/>Screen Flow]
+        LWC1["loanCalculator"]
+        LWC2["loanSummaryCard"]
+        LWC3["installmentSchedule"]
+        Flow1["Disburse Loan Screen Flow"]
     end
 
     subgraph Automation["Declarative Automation"]
-        ApprovalProc[Approval Process]
-        ClosedWonFlow[Closed Won → Loan Flow]
-        ReminderFlow[EMI Reminder<br/>Scheduled Flow]
+        ApprovalProc["Approval Process"]
+        ClosedWonFlow["Closed Won to Loan Flow"]
+        ReminderFlow["EMI Reminder Scheduled Flow"]
     end
 
-    subgraph Apex["Apex Layer"]
-        LoanTrigger[LoanTrigger / Handler]
-        PaymentTrigger[PaymentTrigger / Handler]
-        EmiCalc[EmiCalculator]
-        Batch[OverdueInstallmentBatch]
-        Scheduler[OverdueScheduler]
-        Queueable[AccountRollupQueueable]
-        REST[LoanStatusService<br/>@RestResource]
+    subgraph ApexLayer["Apex Layer"]
+        LoanTrigger["LoanTrigger and Handler"]
+        PaymentTrigger["PaymentTrigger and Handler"]
+        EmiCalc["EmiCalculator"]
+        Batch["OverdueInstallmentBatch"]
+        Scheduler["OverdueScheduler"]
+        Queueable["AccountRollupQueueable"]
+        RestApi["LoanStatusService REST Resource"]
+        SummaryCtrl["LoanSummaryController"]
+        ScheduleCtrl["InstallmentScheduleController"]
     end
 
     subgraph Data["Data Model"]
-        Loan[(Loan__c)]
-        Installment[(Installment__c)]
-        Payment[(Payment__c)]
-        Account[(Account)]
+        Loan[("Loan__c")]
+        Installment[("Installment__c")]
+        Payment[("Payment__c")]
+        Account[("Account")]
     end
 
-    subgraph External["External Systems"]
-        Client[External Client<br/>via REST API]
-        Webhook[webhook.site<br/>Outbound Alerts]
+    subgraph ExternalSys["External Systems"]
+        Client["External Client via REST API"]
+        Webhook["webhook.site Outbound Alerts"]
     end
 
-    LWC2 -->|wire, cacheable Apex| LoanSummaryController
-    LWC3 -->|imperative Apex| InstallmentScheduleController
+    LWC2 -->|wire cacheable Apex| SummaryCtrl
+    LWC3 -->|imperative Apex| ScheduleCtrl
     Flow1 --> Loan
     ClosedWonFlow --> Loan
     ApprovalProc --> Loan
@@ -104,8 +105,8 @@ flowchart TB
     Batch --> Installment
     Batch --> Loan
     Batch --> Queueable
-    Client --> REST
-    REST --> Loan
+    Client --> RestApi
+    RestApi --> Loan
     Batch -.->|Overdue alert| Webhook
 ```
 
