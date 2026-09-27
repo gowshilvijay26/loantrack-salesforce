@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Allows custom permissions for Agentforce Agent : Loan_Tracker_Assistance&apos;s agent user : loan_tracker_assistance@00dgk00000a3tih646459577.ext.</description>
+    <hasActivationRequired>false</hasActivationRequired>
+    <label>Loan_Tracker_Assistance920090994 Permissions</label>
+    <license>Einstein Agent</license>
+</PermissionSet>

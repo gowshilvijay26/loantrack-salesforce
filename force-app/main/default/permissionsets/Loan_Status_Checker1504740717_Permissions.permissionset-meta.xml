@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Allows custom permissions for Agentforce Agent : Loan_Status_Checker&apos;s agent user : loan_status_checker@00dgk00000a3tih350158269.ext.</description>
+    <hasActivationRequired>false</hasActivationRequired>
+    <label>Loan_Status_Checker1504740717 Permissions</label>
+    <license>Einstein Agent</license>
+</PermissionSet>

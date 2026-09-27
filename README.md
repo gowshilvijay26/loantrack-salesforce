@@ -226,6 +226,23 @@ erDiagram
 - `loanSummaryCard` — outstanding amount, repayment progress bar, next due date, and overdue count, powered by `@wire` and a cacheable Apex method.
 - `installmentSchedule` — a `lightning-datatable` with color-coded status badges and a "Record Payment" row action that opens a modal, creates the Payment, and refreshes the table via `refreshApex`.
 - A custom Loan Record Page combining a Status Path, both components above, and related lists.
+### Agentforce (AI Agent Integration)
+- Built an **Agentforce Employee Agent** ("Loan Status Assistant") embedded directly in the
+  Loan Tracker app, answering natural-language questions about loan status, overdue accounts,
+  and outstanding balances.
+- The agent performs a role check (System Admin / Loan Officer / Loan Manager) before
+  answering, respecting the same role-based sharing model used throughout the org.
+- Demonstrates grounding an AI agent in live Salesforce data (Loan, Installment records)
+  rather than static or mocked responses.
+
+**Example interaction:**
+> **User:** Summarize overdue loans
+> **Agent:** To help you summarize overdue loans, please let me know your role. Are you a
+> System Admin, Loan Officer, or Loan Manager?
+> **User:** system admin
+> **Agent:** There is 1 overdue loan found: Loan ID: LN-0019, Outstanding Amount: $0.
+> Would you like to check another loan category (Pending Approval, Defaulted, Not Yet
+> Disbursed) or end the session?
 
 ### Reports & Dashboards
 - Custom Report Type: Loans with Installments and Payments.
@@ -251,6 +268,7 @@ erDiagram
 | Security | Profiles, Permission Sets, Role Hierarchy, Sharing Rules, Field-Level Security |
 | Testing | Apex unit tests (`@isTest`), `HttpCalloutMock` |
 | Tooling | Salesforce CLI (`sf`), VS Code, Git/GitHub |
+| AI | Agentforce (Employee Agent) |
 
 ---
 

@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GenAiPlannerBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Automate common business tasks and assist users in their flow of work. Agentforce Employee Agent can search knowledge articles and other data sources. Customize it further to meet your employees&apos; business needs.</description>
+    <localTopicLinks>
+        <genAiPluginName>GeneralFAQ_16jgK000002Cs6j</genAiPluginName>
+    </localTopicLinks>
+    <localTopicLinks>
+        <genAiPluginName>agent_router_16jgK000002Cs6j</genAiPluginName>
+    </localTopicLinks>
+    <localTopicLinks>
+        <genAiPluginName>ambiguous_question_16jgK000002Cs6j</genAiPluginName>
+    </localTopicLinks>
+    <localTopicLinks>
+        <genAiPluginName>loan_query_16jgK000002Cs6j</genAiPluginName>
+    </localTopicLinks>
+    <localTopicLinks>
+        <genAiPluginName>off_topic_16jgK000002Cs6j</genAiPluginName>
+    </localTopicLinks>
+    <localTopicLinks>
+        <genAiPluginName>role_identifier_16jgK000002Cs6j</genAiPluginName>
+    </localTopicLinks>
+    <localTopics>
+        <fullName>agent_router_16jgK000002Cs6j</fullName>
+        <canEscalate>false</canEscalate>
+        <description>Welcome the user and determine the appropriate subagent based on user input</description>
+        <developerName>agent_router_16jgK000002Cs6j</developerName>
+        <genAiPluginInstructions>
+            <description>You are an AI Agent.
+
+The user&apos;s current context is:
+Current App Name: {!@variables.currentAppName}
+Current Object Name: {!@variables.currentObjectApiName}
+Current Page Type: {!@variables.currentPageType}
+Current Record ID: {!@variables.currentRecordId}
+
+{{state.AgentScriptInternal_agent_instructions}}</description>
+            <developerName>instruction0_179gK000002RnLF</developerName>
+            <language>en_US</language>
+            <masterLabel>instruction0_179gK000002RnLF</masterLabel>
+            <sortOrder>1</sortOrder>
+        </genAiPluginInstructions>
+        <language>en_US</language>
+        <localDeveloperName>agent_router</localDeveloperName>
+        <masterLabel>Agent Router</masterLabel>
+        <pluginType>Topic</pluginType>
+    </localTopics>
+    <localTopics>
+        <fullName>role_identifier_16jgK000002Cs6j</fullName>
+        <canEscalate>false</canEscalate>
+        <description>Identifies the user&apos;s role (System Admin, Loan Officer, or Loan Manager) and routes them to the loan query subagent.</description>
+        <developerName>role_identifier_16jgK000002Cs6j</developerName>
+        <genAiPluginInstructions>
+            <description>You are an AI Agent.
+
+The user&apos;s current context is:
+Current App Name: {{state.currentAppName}}
+Current Object Name: {{state.currentObjectApiName}}
+Current Page Type: {{state.currentPageType}}
+Current Record ID: {{state.currentRecordId}}</description>
+            <developerName>instruction0_179gK000002RnLH</developerName>
+            <language>en_US</language>
+            <masterLabel>instruction0_179gK000002RnLH</masterLabel>
+            <sortOrder>1</sortOrder>
+        </genAiPluginInstructions>
+        <language>en_US</language>
+        <localDeveloperName>role_identifier</localDeveloperName>
+        <masterLabel>Role Identifier</masterLabel>
+        <pluginType>Topic</pluginType>
+    </localTopics>
+    <localTopics>
+        <fullName>ambiguous_question_16jgK000002Cs6j</fullName>
+        <canEscalate>false</canEscalate>
+        <description>Redirect conversation to relevant topics when user request is too ambiguous</description>
+        <developerName>ambiguous_question_16jgK000002Cs6j</developerName>
+        <genAiPluginInstructions>
+            <description>You are an AI Agent.
+
+The user&apos;s current context is:
+Current App Name: {{state.currentAppName}}
+Current Object Name: {{state.currentObjectApiName}}
+Current Page Type: {{state.currentPageType}}
+Current Record ID: {{state.currentRecordId}}</description>
+            <developerName>instruction0_179gK000002RnLG</developerName>
+            <language>en_US</language>
+            <masterLabel>instruction0_179gK000002RnLG</masterLabel>
+            <sortOrder>1</sortOrder>
+        </genAiPluginInstructions>
+        <language>en_US</language>
+        <localDeveloperName>ambiguous_question</localDeveloperName>
+        <masterLabel>Ambiguous Question</masterLabel>
+        <pluginType>Topic</pluginType>
+    </localTopics>
+    <localTopics>
+        <fullName>loan_query_16jgK000002Cs6j</fullName>
+        <canEscalate>false</canEscalate>
+        <description>Allows internal users to check Loan__c records by status category. Available categories are gated by the user&apos;s role.</description>
+        <developerName>loan_query_16jgK000002Cs6j</developerName>
+        <genAiPluginInstructions>
+            <description>You are an AI Agent.
+
+The user&apos;s current context is:
+Current App Name: {{state.currentAppName}}
+Current Object Name: {{state.currentObjectApiName}}
+Current Page Type: {{state.currentPageType}}
+Current Record ID: {{state.currentRecordId}}</description>
+            <developerName>instruction0_179gK000002RnLJ</developerName>
+            <language>en_US</language>
+            <masterLabel>instruction0_179gK000002RnLJ</masterLabel>
+            <sortOrder>1</sortOrder>
+        </genAiPluginInstructions>
+        <language>en_US</language>
+        <localActionLinks>
+            <functionName>GetDefaultedLoans_179gK000002RnLJ</functionName>
+        </localActionLinks>
+        <localActionLinks>
+            <functionName>GetNotDisbursedLoans_179gK000002RnLJ</functionName>
+        </localActionLinks>
+        <localActionLinks>
+            <functionName>GetPendingApprovalLoans_179gK000002RnLJ</functionName>
+        </localActionLinks>
+        <localActionLinks>
+            <functionName>GetOverdueLoans_179gK000002RnLJ</functionName>
+        </localActionLinks>
+        <localActions>
+            <fullName>GetOverdueLoans_179gK000002RnLJ</fullName>
+            <description>Retrieves Loan__c records where Overdue_Installments__c &gt; 0. Available to System Admin and Loan Manager.</description>
+            <developerName>GetOverdueLoans_179gK000002RnLJ</developerName>
+            <invocationTarget>queryRecords</invocationTarget>
+            <invocationTargetType>standardInvocableAction</invocationTargetType>
+            <isConfirmationRequired>false</isConfirmationRequired>
+            <isIncludeInProgressIndicator>true</isIncludeInProgressIndicator>
+            <localDeveloperName>GetOverdueLoans</localDeveloperName>
+            <masterLabel>Query records</masterLabel>
+            <source>EmployeeCopilot__QueryRecords</source>
+        </localActions>
+        <localActions>
+            <fullName>GetNotDisbursedLoans_179gK000002RnLJ</fullName>
+            <description>Retrieves Loan__c records with Status__c = &apos;Approved&apos; (approved but not yet disbursed). Available to System Admin and Loan Officer.</description>
+            <developerName>GetNotDisbursedLoans_179gK000002RnLJ</developerName>
+            <invocationTarget>queryRecords</invocationTarget>
+            <invocationTargetType>standardInvocableAction</invocationTargetType>
+            <isConfirmationRequired>false</isConfirmationRequired>
+            <isIncludeInProgressIndicator>true</isIncludeInProgressIndicator>
+            <localDeveloperName>GetNotDisbursedLoans</localDeveloperName>
+            <masterLabel>Query records</masterLabel>
+            <source>EmployeeCopilot__QueryRecords</source>
+        </localActions>
+        <localActions>
+            <fullName>GetDefaultedLoans_179gK000002RnLJ</fullName>
+            <description>Retrieves Loan__c records with Status__c = &apos;Defaulted&apos;. Available to System Admin and Loan Manager.</description>
+            <developerName>GetDefaultedLoans_179gK000002RnLJ</developerName>
+            <invocationTarget>queryRecords</invocationTarget>
+            <invocationTargetType>standardInvocableAction</invocationTargetType>
+            <isConfirmationRequired>false</isConfirmationRequired>
+            <isIncludeInProgressIndicator>true</isIncludeInProgressIndicator>
+            <localDeveloperName>GetDefaultedLoans</localDeveloperName>
+            <masterLabel>Query records</masterLabel>
+            <source>EmployeeCopilot__QueryRecords</source>
+        </localActions>
+        <localActions>
+            <fullName>GetPendingApprovalLoans_179gK000002RnLJ</fullName>
+            <description>Retrieves Loan__c records with Status__c = &apos;Pending Approval&apos;. Available to System Admin and Loan Officer.</description>
+            <developerName>GetPendingApprovalLoans_179gK000002RnLJ</developerName>
+            <invocationTarget>queryRecords</invocationTarget>
+            <invocationTargetType>standardInvocableAction</invocationTargetType>
+            <isConfirmationRequired>false</isConfirmationRequired>
+            <isIncludeInProgressIndicator>true</isIncludeInProgressIndicator>
+            <localDeveloperName>GetPendingApprovalLoans</localDeveloperName>
+            <masterLabel>Query records</masterLabel>
+            <source>EmployeeCopilot__QueryRecords</source>
+        </localActions>
+        <localDeveloperName>loan_query</localDeveloperName>
+        <masterLabel>Loan Query</masterLabel>
+        <pluginType>Topic</pluginType>
+    </localTopics>
+    <localTopics>
+        <fullName>off_topic_16jgK000002Cs6j</fullName>
+        <canEscalate>false</canEscalate>
+        <description>Redirect conversation to relevant topics when user request goes off-topic</description>
+        <developerName>off_topic_16jgK000002Cs6j</developerName>
+        <genAiPluginInstructions>
+            <description>You are an AI Agent.
+
+The user&apos;s current context is:
+Current App Name: {{state.currentAppName}}
+Current Object Name: {{state.currentObjectApiName}}
+Current Page Type: {{state.currentPageType}}
+Current Record ID: {{state.currentRecordId}}</description>
+            <developerName>instruction0_179gK000002RnLI</developerName>
+            <language>en_US</language>
+            <masterLabel>instruction0_179gK000002RnLI</masterLabel>
+            <sortOrder>1</sortOrder>
+        </genAiPluginInstructions>
+        <language>en_US</language>
+        <localDeveloperName>off_topic</localDeveloperName>
+        <masterLabel>Off Topic</masterLabel>
+        <pluginType>Topic</pluginType>
+    </localTopics>
+    <localTopics>
+        <fullName>GeneralFAQ_16jgK000002Cs6j</fullName>
+        <canEscalate>false</canEscalate>
+        <description>Answers customer questions about company products, specifications, policies, or business procedures by searching knowledge articles or other data sources.</description>
+        <developerName>GeneralFAQ_16jgK000002Cs6j</developerName>
+        <genAiPluginInstructions>
+            <description>You are an AI Agent.
+
+The user&apos;s current context is:
+Current App Name: {{state.currentAppName}}
+Current Object Name: {{state.currentObjectApiName}}
+Current Page Type: {{state.currentPageType}}
+Current Record ID: {{state.currentRecordId}}</description>
+            <developerName>instruction0_179gK000002RnLK</developerName>
+            <language>en_US</language>
+            <masterLabel>instruction0_179gK000002RnLK</masterLabel>
+            <sortOrder>1</sortOrder>
+        </genAiPluginInstructions>
+        <language>en_US</language>
+        <localActionLinks>
+            <functionName>AnswerQuestionsWithKnowledge_179gK000002RnLK</functionName>
+        </localActionLinks>
+        <localActions>
+            <fullName>AnswerQuestionsWithKnowledge_179gK000002RnLK</fullName>
+            <description>Answers questions about company policies and procedures, troubleshooting steps, or product information. For example: &apos;What is your return policy?&apos; &apos;How do I fix an issue?&apos; or &apos;What features does a product have?&apos;</description>
+            <developerName>AnswerQuestionsWithKnowledge_179gK000002RnLK</developerName>
+            <invocationTarget>streamKnowledgeSearch</invocationTarget>
+            <invocationTargetType>standardInvocableAction</invocationTargetType>
+            <isConfirmationRequired>false</isConfirmationRequired>
+            <isIncludeInProgressIndicator>true</isIncludeInProgressIndicator>
+            <localDeveloperName>AnswerQuestionsWithKnowledge</localDeveloperName>
+            <masterLabel>Answer Questions with Knowledge</masterLabel>
+            <progressIndicatorMessage>Getting answers</progressIndicatorMessage>
+            <source>EmployeeCopilot__AnswerQuestionsWithKnowledge</source>
+        </localActions>
+        <localDeveloperName>GeneralFAQ</localDeveloperName>
+        <masterLabel>General FAQ</masterLabel>
+        <pluginType>Topic</pluginType>
+    </localTopics>
+    <masterLabel>Loan Status Assistant</masterLabel>
+    <plannerType>Atlas__ConcurrentMultiAgentOrchestration</plannerType>
+</GenAiPlannerBundle>
