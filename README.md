@@ -314,21 +314,6 @@ sf apex run test --test-level RunLocalTests --result-format human --code-coverag
 
 ---
 
-## Screenshots
-
-> Replace the placeholders below with real screenshots before publishing. Suggested shots: the Loan record page (Path + Loan Summary + Installment Schedule), the Approval History on a Loan, the Disburse Loan screen flow, the Installment Schedule "Record Payment" modal, and the Loan Portfolio Dashboard.
-
-| Loan Record Page | Installment Schedule & Payment Modal |
-|---|---|
-| ![Loan record page](docs/screenshots/loan-record-page.png) | ![Record payment modal](docs/screenshots/record-payment-modal.png) |
-
-| Approval Process in Action | Loan Portfolio Dashboard |
-|---|---|
-| ![Approval history](docs/screenshots/approval-history.png) | ![Dashboard](docs/screenshots/loan-portfolio-dashboard.png) |
-
-*(Create a `docs/screenshots/` folder in the repo and drop your PNGs in with these exact file names, or update the paths above to match your own.)*
-
----
 
 ## Known Limitations & Next Steps
 
