@@ -126,57 +126,57 @@ flowchart TB
 
 ```mermaid
 erDiagram
-    LEAD ||--o{ OPPORTUNITY : "converts to"
-    ACCOUNT ||--o{ OPPORTUNITY : "has"
-    ACCOUNT ||--o{ LOAN : "borrows"
-    OPPORTUNITY ||--o| LOAN : "becomes on Closed Won"
-    LOAN ||--o{ INSTALLMENT : "has schedule of"
-    LOAN ||--o{ PAYMENT : "receives"
-    INSTALLMENT ||--o{ PAYMENT : "is paid by"
+    LEAD ||--o{ OPPORTUNITY : converts_to
+    ACCOUNT ||--o{ OPPORTUNITY : has
+    ACCOUNT ||--o{ LOAN : borrows
+    OPPORTUNITY ||--o| LOAN : becomes_on_closed_won
+    LOAN ||--o{ INSTALLMENT : has_schedule_of
+    LOAN ||--o{ PAYMENT : receives
+    INSTALLMENT ||--o{ PAYMENT : is_paid_by
 
     LOAN {
-        string Name "Auto Number LN-0000"
-        lookup Client "Account"
-        lookup Source_Opportunity "Opportunity"
-        currency Principal_Amount
-        percent Interest_Rate
+        string Name
+        string Client
+        string Source_Opportunity
+        number Principal_Amount
+        number Interest_Rate
         number Tenure_Months
         date Disbursement_Date
         date First_EMI_Date
-        picklist Status "Draft to Closed"
-        currency EMI_Amount
-        formula Maturity_Date
-        rollup Total_Payable
-        rollup Total_Interest
-        rollup Total_Paid
-        rollup Overdue_Installments
-        formula Outstanding_Amount
-        formula Repayment_Progress
+        string Status
+        number EMI_Amount
+        date Maturity_Date
+        number Total_Payable
+        number Total_Interest
+        number Total_Paid
+        number Overdue_Installments
+        number Outstanding_Amount
+        number Repayment_Progress
     }
 
     INSTALLMENT {
-        string Name "Auto Number INS-00000"
-        masterdetail Loan
+        string Name
+        string Loan
         number Installment_Number
         date Due_Date
-        currency EMI_Amount
-        currency Principal_Component
-        currency Interest_Component
-        currency Amount_Paid
+        number EMI_Amount
+        number Principal_Component
+        number Interest_Component
+        number Amount_Paid
         date Paid_Date
-        currency Late_Fee
-        formula Balance_Due
-        picklist Status "Pending to Overdue"
+        number Late_Fee
+        number Balance_Due
+        string Status
     }
 
     PAYMENT {
-        string Name "Auto Number PAY-00000"
-        masterdetail Loan
-        lookup Installment
-        currency Amount
+        string Name
+        string Loan
+        string Installment
+        number Amount
         date Payment_Date
-        picklist Payment_Mode "Cash UPI Bank Transfer Cheque"
-        text Reference_Number
+        string Payment_Mode
+        string Reference_Number
     }
 ```
 
