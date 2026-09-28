@@ -2,7 +2,7 @@
 
 LoanTrack is an end-to-end loan management solution built on Salesforce, covering the full lifecycle of a loan: **Enquiry → Client → Loan Deal → Loan → Approval → Disbursement → EMI Schedule → Payments → Overdue Tracking → Reports & Dashboards.**
 
-It was built as a portfolio project to demonstrate hands-on Salesforce development skills: custom data modeling, Apex (triggers, batch, scheduled, queueable, REST), Flow automation, Lightning Web Components, integration, security, testing, and reporting.
+It was built as a portfolio project to demonstrate hands-on Salesforce development skills: custom data modeling, Apex (triggers, batch, scheduled, queueable, REST), Flow automation, Lightning Web Components, integration, security, testing, reporting, and an Agentforce AI agent.
 
 > **Note:** This project uses dummy data only. No real client or financial data is stored in this org or repository.
 
@@ -17,7 +17,6 @@ It was built as a portfolio project to demonstrate hands-on Salesforce developme
 - [Tech Stack](#tech-stack)
 - [Setup & Deployment](#setup--deployment)
 - [Testing](#testing)
-- [Screenshots](#screenshots)
 - [Known Limitations & Next Steps](#known-limitations--next-steps)
 
 ---
@@ -26,15 +25,15 @@ It was built as a portfolio project to demonstrate hands-on Salesforce developme
 
 ```mermaid
 flowchart LR
-    A[Enquiry<br/>Lead] --> B[Client<br/>Account]
-    B --> C[Loan Deal<br/>Opportunity]
-    C -->|Closed Won| D[Loan<br/>Draft]
-    D --> E[Approval<br/>Process]
-    E --> F[Disbursement<br/>Screen Flow]
-    F --> G[EMI Schedule<br/>Installments]
-    G --> H[Payments]
-    H --> I[Overdue Tracking<br/>Batch/Scheduler]
-    I --> J[Reports &<br/>Dashboards]
+    A["Enquiry (Lead)"] --> B["Client (Account)"]
+    B --> C["Loan Deal (Opportunity)"]
+    C -->|Closed Won| D["Loan (Draft)"]
+    D --> E["Approval Process"]
+    E --> F["Disbursement (Screen Flow)"]
+    F --> G["EMI Schedule (Installments)"]
+    G --> H["Payments"]
+    H --> I["Overdue Tracking (Batch and Scheduler)"]
+    I --> J["Reports and Dashboards"]
 ```
 
 1. A **Lead** enquires about a loan (via Web-to-Lead or manual entry).
@@ -46,10 +45,12 @@ flowchart LR
 7. Clients make **Payments**, which are automatically allocated to installments (oldest due first).
 8. A nightly **Batch job** marks missed installments **Overdue**, adds late fees, and marks chronically overdue loans **Defaulted**.
 9. **Reports and a Dashboard** give the business a live view of the loan portfolio.
+10. An **Agentforce agent** answers natural-language questions about loan status directly inside the app.
 
 ---
 
 ## Architecture Overview
+
 ```mermaid
 flowchart TB
     subgraph UI["Lightning Experience"]
@@ -57,6 +58,7 @@ flowchart TB
         LWC2["loanSummaryCard"]
         LWC3["installmentSchedule"]
         Flow1["Disburse Loan Screen Flow"]
+        Agent["Agentforce: Loan Status Assistant"]
     end
 
     subgraph Automation["Declarative Automation"]
@@ -91,6 +93,7 @@ flowchart TB
 
     LWC2 -->|wire cacheable Apex| SummaryCtrl
     LWC3 -->|imperative Apex| ScheduleCtrl
+    Agent -->|reads live data| Loan
     Flow1 --> Loan
     ClosedWonFlow --> Loan
     ApprovalProc --> Loan
@@ -115,7 +118,7 @@ flowchart TB
 - **Separation of concerns** — triggers only delegate to handler classes; calculation logic (`EmiCalculator`) is isolated and reusable across triggers, LWC, and the REST API.
 - **Configuration over hardcoding** — grace days, late fee %, approval threshold, and default-after-overdue-count all live in a **Custom Metadata Type**, editable by an admin without a deployment.
 - **Recursion guards** on triggers to prevent duplicate processing.
-- **Governor-limit awareness** — Batch Apex is used for anything that could scale to large data volumes; Queueable is used for background work that reads/writes across objects.
+- **Governor-limit awareness** — Batch Apex is used for anything that could scale to large data volumes; Queueable is used for background work that reads and writes across objects.
 
 ---
 
@@ -126,22 +129,21 @@ erDiagram
     LEAD ||--o{ OPPORTUNITY : "converts to"
     ACCOUNT ||--o{ OPPORTUNITY : "has"
     ACCOUNT ||--o{ LOAN : "borrows"
-    OPPORTUNITY ||--o| LOAN : "becomes (Closed Won)"
+    OPPORTUNITY ||--o| LOAN : "becomes on Closed Won"
     LOAN ||--o{ INSTALLMENT : "has schedule of"
     LOAN ||--o{ PAYMENT : "receives"
     INSTALLMENT ||--o{ PAYMENT : "is paid by"
-    LOAN_SETTING_MDT ||--o{ LOAN : "configures rules for"
 
     LOAN {
         string Name "Auto Number LN-0000"
         lookup Client "Account"
-        lookup Source_Opportunity
+        lookup Source_Opportunity "Opportunity"
         currency Principal_Amount
         percent Interest_Rate
         number Tenure_Months
         date Disbursement_Date
         date First_EMI_Date
-        picklist Status "Draft/Pending Approval/Approved/Active/Closed/Rejected/Defaulted"
+        picklist Status "Draft to Closed"
         currency EMI_Amount
         formula Maturity_Date
         rollup Total_Payable
@@ -164,7 +166,7 @@ erDiagram
         date Paid_Date
         currency Late_Fee
         formula Balance_Due
-        picklist Status "Pending/Partially Paid/Paid/Overdue"
+        picklist Status "Pending to Overdue"
     }
 
     PAYMENT {
@@ -173,18 +175,12 @@ erDiagram
         lookup Installment
         currency Amount
         date Payment_Date
-        picklist Payment_Mode "Cash/UPI/Bank Transfer/Cheque"
+        picklist Payment_Mode "Cash UPI Bank Transfer Cheque"
         text Reference_Number
     }
-
-    LOAN_SETTING_MDT {
-        number Late_Fee_Percent
-        number Grace_Days
-        currency Approval_Threshold
-        number Max_Tenure_Months
-        number Default_After_Overdue_Count
-    }
 ```
+
+`Loan_Setting_mdt__mdt` (Custom Metadata Type) stores the business rules that the Apex and Flow layers read at runtime: Late Fee %, Grace Days, Approval Threshold, Max Tenure, and Default-After-Overdue-Count.
 
 ---
 
@@ -193,7 +189,7 @@ erDiagram
 ### Data Model & Security
 - Custom objects: `Loan__c`, `Installment__c` (master-detail), `Payment__c` (master-detail), and a `Loan_Setting_mdt__mdt` Custom Metadata Type for business rules.
 - Standard object extensions on Lead, Opportunity, and Account.
-- Private OWD on Loan with role hierarchy (Loan Manager > Loan Officer), custom Permission Sets, Field-Level Security (only managers can edit Interest Rate), and a criteria-based sharing rule sharing Defaulted loans with a Collections public group.
+- Private OWD on Loan with role hierarchy (Loan Manager above Loan Officer), custom Permission Sets, Field-Level Security (only managers can edit Interest Rate), and a criteria-based sharing rule that shares Defaulted loans with a Collections public group.
 
 ### Sales Cloud
 - Lead Assignment Rule routing enquiries to a Loan Officers queue.
@@ -203,52 +199,50 @@ erDiagram
 - Record-Triggered Flow that creates a Draft Loan automatically when an Opportunity is marked Closed Won.
 
 ### Core Apex (Business Logic)
-- `EmiCalculator` — pure calculation class implementing the standard EMI formula, with a dedicated 0%-interest path and interview-ready rounding logic.
-- `LoanTrigger` / `LoanTriggerHandler` — bulkified, recursion-guarded; generates the full installment schedule (principal/interest split, last-installment rounding correction) the moment a loan becomes Active.
+- `EmiCalculator` — pure calculation class implementing the standard EMI formula, with a dedicated 0%-interest path and correct rounding.
+- `LoanTrigger` / `LoanTriggerHandler` — bulkified and recursion-guarded; generates the full installment schedule (principal/interest split, last-installment rounding correction) the moment a loan becomes Active.
 - `PaymentTrigger` / `PaymentTriggerHandler` — allocates a payment across installments (oldest due first, with spill-over to the next installment), and automatically closes a loan once every installment is paid.
-- Validation Rules enforcing data integrity (positive principal, rate bounds, tenure capped via Custom Metadata, locked terms once Active, no future-dated payments).
+- Validation Rules enforcing data integrity: positive principal, rate bounds, tenure capped via Custom Metadata, terms locked once Active, and no future-dated payments.
 
 ### Approval Process & Flow Automation
 - Two-step Approval Process (Manager, then a Senior approver for loans above a configurable threshold).
-- Screen Flow ("Disburse Loan") that captures disbursement details and activates the loan.
+- Screen Flow "Disburse Loan" that captures disbursement details and activates the loan.
 - Scheduled Flow that emails clients a reminder 3 days before their EMI is due.
 
 ### Asynchronous Apex
-- `OverdueInstallmentBatch` (Batchable) — finds installments past their due date + grace period, marks them Overdue, applies a late fee, and defaults loans that cross an overdue-count threshold — all values sourced from Custom Metadata.
+- `OverdueInstallmentBatch` (Batchable) — finds installments past their due date plus grace period, marks them Overdue, applies a late fee, and defaults loans that cross an overdue-count threshold. All values come from Custom Metadata.
 - `OverdueScheduler` (Schedulable) — runs the batch daily.
-- `AccountRollupQueueable` (Queueable) — recalculates each client's Total Loans and Total Outstanding, triggered both from payments and from the nightly batch.
+- `AccountRollupQueueable` (Queueable) — recalculates each client's Total Loans and Total Outstanding, triggered from payments and from the nightly batch.
 
 ### Integration
-- **Inbound:** `LoanStatusService`, an `@RestResource` REST endpoint (`/loanstatus/*`) returning loan status, EMI, outstanding amount, and next due date as JSON, secured via OAuth through a Connected App.
-- **Outbound:** Named Credential + External Credential pointing to a test endpoint, with a callout-enabled Queueable that posts a JSON alert whenever an installment becomes Overdue.
+- **Inbound:** `LoanStatusService`, an `@RestResource` endpoint (`/loanstatus/*`) that returns loan status, EMI, outstanding amount, and next due date as JSON, secured with OAuth through a Connected App.
+- **Outbound:** Named Credential and External Credential pointing to a test endpoint, with a callout-enabled Queueable that posts a JSON alert when an installment becomes Overdue.
 
 ### Lightning Web Components
 - `loanCalculator` — a standalone EMI calculator on the App Home page.
 - `loanSummaryCard` — outstanding amount, repayment progress bar, next due date, and overdue count, powered by `@wire` and a cacheable Apex method.
-- `installmentSchedule` — a `lightning-datatable` with color-coded status badges and a "Record Payment" row action that opens a modal, creates the Payment, and refreshes the table via `refreshApex`.
-- A custom Loan Record Page combining a Status Path, both components above, and related lists.
-### Agentforce (AI Agent Integration)
-- Built an **Agentforce Employee Agent** ("Loan Status Assistant") embedded directly in the
-  Loan Tracker app, answering natural-language questions about loan status, overdue accounts,
-  and outstanding balances.
-- The agent performs a role check (System Admin / Loan Officer / Loan Manager) before
-  answering, respecting the same role-based sharing model used throughout the org.
-- Demonstrates grounding an AI agent in live Salesforce data (Loan, Installment records)
-  rather than static or mocked responses.
-
-**Example interaction:**
-> **User:** Summarize overdue loans
-> **Agent:** To help you summarize overdue loans, please let me know your role. Are you a
-> System Admin, Loan Officer, or Loan Manager?
-> **User:** system admin
-> **Agent:** There is 1 overdue loan found: Loan ID: LN-0019, Outstanding Amount: $0.
-> Would you like to check another loan category (Pending Approval, Defaulted, Not Yet
-> Disbursed) or end the session?
+- `installmentSchedule` — a `lightning-datatable` with color-coded status badges and a "Record Payment" row action that opens a modal, creates the Payment, and refreshes the table with `refreshApex`.
+- A custom Loan Record Page combining a Status Path, both record components, and related lists.
 
 ### Reports & Dashboards
 - Custom Report Type: Loans with Installments and Payments.
 - Reports: Loans by Status, Overdue Installments, Collections This Month, Lead Conversion Funnel.
-- Loan Portfolio Dashboard (total disbursed, total outstanding, collected vs due, top overdue clients), pinned to the app Home page.
+- Loan Portfolio Dashboard (total disbursed, total outstanding, collected vs due, top overdue clients), placed on the app Home page.
+
+### Agentforce (AI Agent Integration)
+- Built an **Agentforce Employee Agent** ("Loan Status Assistant") available inside the Loan Tracker app, answering natural-language questions about loan status, overdue accounts, and outstanding balances.
+- The agent asks for the user's role (System Admin, Loan Officer, or Loan Manager) before answering, in line with the role-based sharing model used across the org.
+- The agent is grounded in live Salesforce data (Loan and Installment records) rather than static or mocked responses.
+
+**Example interaction:**
+
+> **User:** Summarize overdue loans
+>
+> **Agent:** To help you summarize overdue loans, please let me know your role. Are you a System Admin, Loan Officer, or Loan Manager?
+>
+> **User:** system admin
+>
+> **Agent:** There is 1 overdue loan found: Loan ID: LN-0019, Outstanding Amount: $0. Would you like to check another loan category (Pending Approval, Defaulted, Not Yet Disbursed) or end the session?
 
 ### Testing
 - `TestDataFactory` for consistent, reusable test data.
@@ -265,11 +259,11 @@ erDiagram
 | Data & Automation | Custom Objects, Custom Metadata Types, Validation Rules, Flow, Approval Process |
 | Apex | Triggers, Batch Apex, Schedulable, Queueable, `@RestResource` |
 | Frontend | Lightning Web Components, Lightning App Builder |
-| Integration | REST API (inbound), Named/External Credentials + Callouts (outbound), OAuth 2.0 |
-| Security | Profiles, Permission Sets, Role Hierarchy, Sharing Rules, Field-Level Security |
-| Testing | Apex unit tests (`@isTest`), `HttpCalloutMock` |
-| Tooling | Salesforce CLI (`sf`), VS Code, Git/GitHub |
+| Integration | REST API (inbound), Named and External Credentials with callouts (outbound), OAuth 2.0 |
 | AI | Agentforce (Employee Agent) |
+| Security | Profiles, Permission Sets, Role Hierarchy, Sharing Rules, Field-Level Security |
+| Testing | Apex unit tests (`@isTest`) |
+| Tooling | Salesforce CLI (`sf`), VS Code, Git/GitHub |
 
 ---
 
@@ -297,21 +291,19 @@ sf project deploy start --source-dir force-app
 # 4. Run the full test suite and check coverage
 sf apex run test --test-level RunLocalTests --result-format human --code-coverage
 
-# 5. Load sample data (optional)
-#    Use the Data Import Wizard in Setup, or an anonymous Apex script,
-#    to load a handful of dummy Accounts and Loans.
-
-# 6. Open the org
+# 5. Open the org
 sf org open
 ```
 
-### Post-deployment configuration (manual, one-time)
-A few settings can't be captured in metadata and need to be set once per org:
-1. **Custom Metadata values** — Setup → Custom Metadata Types → Loan Setting → Manage Records → set Grace Days, Late Fee %, Approval Threshold, Max Tenure, Default-After-Overdue-Count.
-2. **Schedule the nightly batch** — Setup → Apex Classes → Schedule Apex → Class: `OverdueScheduler`, Frequency: Daily.
-3. **Connected App** — create one under Setup → App Manager if you want to test the inbound REST API via OAuth.
-4. **Named Credential** — point the outbound alert Queueable at your own test endpoint (e.g. a fresh [webhook.site](https://webhook.site) URL).
-5. Assign the `Loan_Officer` / `Loan_Manager` permission sets to any test users you create.
+### Post-deployment configuration (one-time)
+A few settings cannot be captured in metadata and need to be set once per org:
+1. **Custom Metadata values** — Setup → Custom Metadata Types → Loan Setting → Manage Records. Set Grace Days, Late Fee %, Approval Threshold, Max Tenure, and Default-After-Overdue-Count.
+2. **Schedule the nightly batch** — Setup → Apex Classes → Schedule Apex. Class: `OverdueScheduler`, Frequency: Daily.
+3. **Connected App** — create one under Setup → App Manager to test the inbound REST API with OAuth.
+4. **Named Credential** — point the outbound alert Queueable at your own test endpoint, for example a fresh [webhook.site](https://webhook.site) URL.
+5. **Permission Sets** — assign `Loan_Officer` or `Loan_Manager` to any test users you create.
+6. **Agentforce (optional)** — the agent needs Data Cloud and Einstein Generative AI turned on (Setup → Einstein Setup), the agent activated, and users given access through its permission set.
+7. **Sample data** — load a handful of dummy Accounts and Loans with the Data Import Wizard or an anonymous Apex script.
 
 ---
 
@@ -331,18 +323,31 @@ sf apex run test --test-level RunLocalTests --result-format human --code-coverag
 | Pass rate | 100% |
 | Org-wide coverage | 86% |
 
----
+<!--
+SCREENSHOTS (uncomment after adding PNG files to docs/screenshots/)
 
+## Screenshots
+
+| Loan Record Page | Loan Portfolio Dashboard |
+|---|---|
+| ![Loan record page](docs/screenshots/loan-record-page.png) | ![Dashboard](docs/screenshots/loan-portfolio-dashboard.png) |
+
+| Approval Process | Agentforce Loan Status Assistant |
+|---|---|
+| ![Approval history](docs/screenshots/approval-history.png) | ![Agentforce agent](docs/screenshots/agentforce-loan-status-assistant.png) |
+-->
+
+---
 
 ## Known Limitations & Next Steps
 
-- Payments currently only support `after insert` — editing or deleting a payment does not reverse the installment allocation. A real system would need explicit reversal logic.
-- The outbound overdue alert posts to a generic test endpoint (webhook.site); in production this would point to a real downstream system with proper authentication.
-- Stretch feature not yet implemented: an Interest-Only repayment type (monthly interest only, principal due at maturity).
-- Jest tests cover one LWC; expanding coverage to all three components would be a natural next step.
+- Payments are handled on `after insert` only. Editing or deleting a payment does not reverse the installment allocation; a production system would need explicit reversal logic.
+- The outbound overdue alert posts to a generic test endpoint (webhook.site). In production it would point to a real downstream system with proper authentication. A dedicated `HttpCalloutMock` test for this callout is a planned addition.
+- Stretch feature not yet implemented: an Interest-Only repayment type (monthly interest, principal paid at maturity).
+- Jest tests for the LWC components are a natural next step.
 
 ---
 
 ## Author
 
-Built as an end-to-end Salesforce portfolio project — data model, Apex, Flow automation, LWC, integration, security, and testing, with 86% Apex test coverage.
+Built by Gowshil Narmadha V as an end-to-end Salesforce portfolio project covering data modeling, Apex, Flow automation, LWC, integration, security, testing, reporting, and Agentforce.
